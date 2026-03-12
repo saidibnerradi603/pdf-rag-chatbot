@@ -103,14 +103,16 @@ def get_process_service(
     document_service: DocumentService = Depends(get_document_service),
     parse_service: ParseService = Depends(get_parse_service),
     chunk_service: ChunkService = Depends(get_chunk_service),
-    embed_service: EmbedService = Depends(get_embed_service)
+    embed_service: EmbedService = Depends(get_embed_service),
+    chat_model: BaseChatModel = Depends(get_chat_model),
 ) -> ProcessService:
     
     return ProcessService(
         document_service=document_service,
         parse_service=parse_service,
         chunk_service=chunk_service,
-        embed_service=embed_service
+        embed_service=embed_service,
+        chat_model=chat_model,
     )
 
 

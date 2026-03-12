@@ -9,6 +9,7 @@ export default function ChatView({
     loading,
     streaming,
     conversationMeta,
+    suggestedQuestions = [],
     onSend,
     onStop,
 }) {
@@ -21,6 +22,10 @@ export default function ChatView({
         }
     }, [messages])
 
+    const handleSuggestionClick = (question) => {
+        onSend(conversationMeta?.conversationId, question)
+    }
+
     return (
         <div className="chat-view">
             <div className="chat-messages" ref={chatMessagesRef}>
@@ -30,11 +35,27 @@ export default function ChatView({
                             <div className="spinner spinner-lg" />
                         </div>
                     ) : messages.length === 0 ? (
-                        <EmptyState
-                            icon={<HiOutlineSparkles />}
-                            title="Start a conversation"
-                            description="Ask a question about your document and get AI-powered answers with source citations."
-                        />
+                        <div className="empty-state">
+                            <div className="empty-state-icon">
+                                <HiOutlineSparkles />
+                            </div>
+                            <h3>Start a conversation</h3>
+                            <p>Ask a question about your document and get AI-powered answers with source citations.</p>
+                            {suggestedQuestions.length > 0 && (
+                                <div className="suggested-questions">
+                                    {suggestedQuestions.map((question, idx) => (
+                                        <button
+                                            key={idx}
+                                            className="question-chip"
+                                            onClick={() => handleSuggestionClick(question)}
+                                        >
+                                            <HiOutlineSparkles size={14} />
+                                            {question}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     ) : (
                         messages.map((msg) => (
                             <MessageBubble key={msg.id} message={msg} />

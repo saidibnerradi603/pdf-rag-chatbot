@@ -9,6 +9,7 @@ CREATE TABLE public.documents (
   status text NOT NULL DEFAULT 'pending' 
     CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
   file_hash text NOT NULL,
+  suggested_questions jsonb DEFAULT '[]'
   metadata jsonb DEFAULT '{}'::jsonb,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()

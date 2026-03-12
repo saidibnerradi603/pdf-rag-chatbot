@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { conversationsAPI } from '../api/conversations'
+import { documentsAPI } from '../api/documents'
 import { streamChat } from '../api/stream'
 import { getErrorMessage } from '../utils/helpers'
 import toast from 'react-hot-toast'
@@ -9,10 +10,12 @@ export function useChat({ onTitleUpdate } = {}) {
     const [conversationMeta, setConversationMeta] = useState(null)
     const [loading, setLoading] = useState(false)
     const [streaming, setStreaming] = useState(false)
+    const [suggestedQuestions, setSuggestedQuestions] = useState([])
     const abortControllerRef = useRef(null)
 
     const loadHistory = useCallback(async (conversationId) => {
         setLoading(true)
+        setSuggestedQuestions([])
         try {
             const res = await conversationsAPI.getHistory(conversationId)
             const data = res.data
@@ -30,6 +33,17 @@ export function useChat({ onTitleUpdate } = {}) {
                     citations: m.citations || null,
                 }))
             )
+
+            if (data.messages.length === 0 && data.document_id) {
+                try {
+                    const docRes = await documentsAPI.get(data.document_id)
+                    if (docRes.data.suggested_questions?.length > 0) {
+                        setSuggestedQuestions(docRes.data.suggested_questions)
+                    }
+                } catch {
+                    // ignore
+                }
+            }
         } catch (err) {
             toast.error(getErrorMessage(err))
         } finally {
@@ -41,14 +55,15 @@ export function useChat({ onTitleUpdate } = {}) {
         setMessages([])
         setConversationMeta(null)
         setStreaming(false)
+        setSuggestedQuestions([])
     }, [])
 
     const sendMessage = useCallback(
         async (conversationId, message, options = {}) => {
-            // Check if this is the first user message (title will update)
             const isFirstMessage = messages.filter((m) => m.role === 'user').length === 0
 
-            // Add user message immediately
+            setSuggestedQuestions([])
+
             const userMsg = {
                 id: `temp-user-${Date.now()}`,
                 role: 'user',
@@ -57,7 +72,6 @@ export function useChat({ onTitleUpdate } = {}) {
             }
             setMessages((prev) => [...prev, userMsg])
 
-            // Add empty assistant message for streaming
             const assistantId = `temp-ai-${Date.now()}`
             setMessages((prev) => [
                 ...prev,
@@ -108,7 +122,6 @@ export function useChat({ onTitleUpdate } = {}) {
                     )
                     setStreaming(false)
 
-                    // After first message, backend auto-updates the title.
                     if (isFirstMessage) {
                         const newTitle = message.length > 50
                             ? message.slice(0, 50) + '...'
@@ -154,6 +167,7 @@ export function useChat({ onTitleUpdate } = {}) {
         conversationMeta,
         loading,
         streaming,
+        suggestedQuestions,
         loadHistory,
         sendMessage,
         stopStreaming,

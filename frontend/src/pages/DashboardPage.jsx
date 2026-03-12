@@ -46,6 +46,7 @@ export default function DashboardPage() {
         conversationMeta,
         loading: chatLoading,
         streaming,
+        suggestedQuestions,
         loadHistory,
         sendMessage,
         stopStreaming,
@@ -225,6 +226,7 @@ export default function DashboardPage() {
                         loading={chatLoading}
                         streaming={streaming}
                         conversationMeta={conversationMeta}
+                        suggestedQuestions={suggestedQuestions}
                         onSend={sendMessage}
                         onStop={stopStreaming}
                     />

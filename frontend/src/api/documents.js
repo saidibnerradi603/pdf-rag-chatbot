@@ -17,6 +17,8 @@ export const documentsAPI = {
 
     getStatus: (documentId) => api.get(`/documents/${documentId}/status`),
 
+    get: (documentId) => api.get(`/documents/${documentId}`),
+
     getDownloadUrl: (documentId, expiresIn = 3600) =>
         api.get(`/documents/${documentId}/download`, {
             params: { expires_in: expiresIn },

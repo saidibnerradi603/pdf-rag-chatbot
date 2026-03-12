@@ -330,11 +330,17 @@ class DocumentService:
         await self.db.table("documents").update({"status": new_status}).eq("id", document_id).eq("user_id", user_id).execute()
         logger.info("Document %s → status: %s", document_id, new_status)
 
-    
-    
-    
-    
-    
-    
-    
-    
+    async def update_suggested_questions(
+        self,
+        document_id: str,
+        user_id: str,
+        questions: list[str]
+    ) -> None:
+        await (
+            self.db.table("documents")
+            .update({"suggested_questions": questions})
+            .eq("id", document_id)
+            .eq("user_id", user_id)
+            .execute()
+        )
+        logger.info("Saved %d suggested questions for document %s", len(questions), document_id)

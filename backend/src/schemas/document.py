@@ -19,6 +19,7 @@ class DocumentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     metadata: dict = {}
+    suggested_questions: list[str] = []
 
 
 
