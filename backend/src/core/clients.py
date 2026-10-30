@@ -34,7 +34,7 @@ def get_cohere_embeddings() -> CohereEmbeddings:
 # Centralized factory - easy switching between LLMs (gemini ↔ gpt ↔ claude ...) 
 def get_chat_model() -> BaseChatModel:
     return init_chat_model(
-        model="gemini-2.5-flash",
+        model="gemini-3.8-flash",
         model_provider="google_genai",
         temperature=0.2,
         streaming=True,
